@@ -8,6 +8,12 @@ When you open the lid, Toasty runs the performance cores until the palm rest rea
   <img src="assets/card.png" alt="Toasty card showing palm rest temperature, target, status and per-core load" width="320">
 </p>
 
+## Download
+
+**[Download Toasty.app.zip](https://github.com/LondonVista/Toasty/releases/latest/download/Toasty.app.zip)** (latest release, Apple Silicon)
+
+Unzip, move `Toasty.app` to Applications, then right-click it and choose **Open** the first time (the app is not notarized).
+
 ## Features
 
 - **Palm rest temperature** from the battery sensor, which sits right under your palms.
