@@ -1,0 +1,9 @@
+build/
+.DS_Store
+
+# Agent notes and local config can mention machine paths
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.env
+.claude/
