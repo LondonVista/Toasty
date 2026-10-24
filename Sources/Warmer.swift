@@ -32,7 +32,13 @@ final class Warmer: ObservableObject {
 
     /// Heat to the target at full power, then rest until the palm rest cools to `reheatAt`.
     private enum Phase { case warmingUp, resting, reheating }
-    private var phase = Phase.warmingUp { didSet { if phase != oldValue { log("\(phase)") } } }
+    private var phase = Phase.warmingUp {
+        didSet {
+            // Remembered so a restart or update carries on with an unfinished warm-up.
+            defaults.set(phase != .resting, forKey: "midWarmUp")
+            if phase != oldValue { log("\(phase)") }
+        }
+    }
 
     /// One line per state change in ~/Library/Logs/Toasty.log, to see later why it heated or not.
     private let logURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/Toasty.log")
@@ -91,7 +97,8 @@ final class Warmer: ObservableObject {
     var loginItemEnabled: Bool { SMAppService.mainApp.status == .enabled }
 
     /// `now` heats straight away (the ⏻ button); otherwise a warm Mac waits for the reheat point.
-    func start(now: Bool = false) {
+    func start(now: Bool = false, resuming: Bool = false) {
+        let now = now || (resuming && defaults.bool(forKey: "midWarmUp"))
         warmingUntil = holdMinutes > 0 ? Date().addingTimeInterval(Double(holdMinutes) * 60) : nil
         isWarming = true
         // Already warm from earlier use: wait until it cools to the reheat point.
@@ -104,6 +111,7 @@ final class Warmer: ObservableObject {
     }
 
     func stop() {
+        defaults.set(false, forKey: "midWarmUp")
         if isWarming { log("stop") }
         isWarming = false
         warmingUntil = nil

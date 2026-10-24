@@ -31,7 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if CommandLine.arguments.contains("--heat-now") {
             warmer.start(now: true)
         } else if warmer.autoStart {
-            warmer.start()
+            warmer.start(resuming: true)
         }
     }
 
