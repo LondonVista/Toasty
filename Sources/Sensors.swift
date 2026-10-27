@@ -4,7 +4,6 @@ import IOKit.ps
 // Private IOHIDEventSystem calls. They read Apple Silicon temperature sensors without root.
 typealias HIDClient = OpaquePointer
 typealias HIDService = OpaquePointer
-typealias HIDEvent = OpaquePointer
 
 @_silgen_name("IOHIDEventSystemClientCreate")
 private func IOHIDEventSystemClientCreate(_ allocator: CFAllocator?) -> HIDClient?
@@ -15,9 +14,9 @@ private func IOHIDEventSystemClientCopyServices(_ client: HIDClient) -> CFArray?
 @_silgen_name("IOHIDServiceClientCopyProperty")
 private func IOHIDServiceClientCopyProperty(_ service: HIDService, _ key: CFString) -> CFTypeRef?
 @_silgen_name("IOHIDServiceClientCopyEvent")
-private func IOHIDServiceClientCopyEvent(_ service: HIDService, _ type: Int64, _ options: Int32, _ timestamp: Int64) -> HIDEvent?
+private func IOHIDServiceClientCopyEvent(_ service: HIDService, _ type: Int64, _ options: Int32, _ timestamp: Int64) -> Unmanaged<CFTypeRef>?
 @_silgen_name("IOHIDEventGetFloatValue")
-private func IOHIDEventGetFloatValue(_ event: HIDEvent, _ field: Int32) -> Double
+private func IOHIDEventGetFloatValue(_ event: CFTypeRef, _ field: Int32) -> Double
 
 private let temperatureEventType: Int64 = 15
 
@@ -46,7 +45,8 @@ final class Sensors {
         for object in services {
             let service = unsafeBitCast(object, to: HIDService.self)
             guard let name = IOHIDServiceClientCopyProperty(service, "Product" as CFString) as? String,
-                  let event = IOHIDServiceClientCopyEvent(service, temperatureEventType, 0, 0) else { continue }
+                  // A "Copy" call hands us ownership; taking it releases the event after use.
+                  let event = IOHIDServiceClientCopyEvent(service, temperatureEventType, 0, 0)?.takeRetainedValue() else { continue }
             let value = IOHIDEventGetFloatValue(event, Int32(temperatureEventType << 16))
             guard value > 0, value < 150 else { continue } // unused sensors report negative values
             if name.hasPrefix("gas gauge battery") {

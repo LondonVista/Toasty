@@ -23,7 +23,7 @@ Unzip, move `Toasty.app` to Applications, then right-click it and choose **Open*
 - **Shares the Mac**: uses at most the 4 performance cores at low priority, drops to half power when other apps get busy or macOS reports thermal pressure, and stops at critical heat or 105 °C on the chip.
 - **Live core load** for every efficiency and performance core.
 - **Battery aware**: optional on battery, stops below 20 %.
-- Glass card that docks under the [iPhone Battery Widget](https://github.com/LondonVista/iPhoneBatteryWidget) when it is running, and a Dock menu for the settings.
+- Glass card that docks under the [iPhone Battery Widget](https://github.com/LondonVista/iPhoneBatteryWidget) when it is running and follows it as it resizes. Drag the card to move it; near the widget it snaps to its edges. A Dock menu holds the settings.
 
 ## Requirements
 
